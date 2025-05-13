@@ -114,36 +114,59 @@ namespace BogseyVideoStore
 
         private void btnDelete_Click(object sender, EventArgs e)
         {
-            MySqlConnection connection = new MySqlConnection(connectionString);
-            try
+            using (MySqlConnection connection = new MySqlConnection(connectionString))
             {
-                if (dgvVideos.SelectedRows.Count > 0)
+                try
                 {
-                    int videoId = Convert.ToInt32(dgvVideos.SelectedRows[0].Cells[0].Value);
-                    string query = "DELETE FROM videos WHERE video_id = @id";
-                    MySqlCommand cmd = new MySqlCommand(query, connection);
-                    cmd.Parameters.AddWithValue("@id", videoId);
+                    if (dgvVideos.SelectedRows.Count > 0)
+                    {
+                        int videoId = Convert.ToInt32(dgvVideos.SelectedRows[0].Cells[0].Value);
 
-                    connection.Open();
-                    cmd.ExecuteNonQuery();
-                    MessageBox.Show("Video deleted successfully!");
+                        // Check if the video has rental records
+                        string checkQuery = "SELECT COUNT(*) FROM rentals WHERE video_id = @id";
+                        MySqlCommand checkCmd = new MySqlCommand(checkQuery, connection);
+                        checkCmd.Parameters.AddWithValue("@id", videoId);
 
-                    LoadVideos();
+                        connection.Open();
+                        int rentalCount = Convert.ToInt32(checkCmd.ExecuteScalar());
+
+                        if (rentalCount > 0)
+                        {
+                            MessageBox.Show(
+                                "Cannot delete this video because there is rental information associated with it.\n" +
+                                "Please delete all rental records for this video before deleting the video.",
+                                "Delete Not Allowed",
+                                MessageBoxButtons.OK,
+                                MessageBoxIcon.Warning
+                            );
+                            return;
+                        }
+
+                        // Proceed with deletion if no rentals exist
+                        string query = "DELETE FROM videos WHERE video_id = @id";
+                        MySqlCommand cmd = new MySqlCommand(query, connection);
+                        cmd.Parameters.AddWithValue("@id", videoId);
+                        cmd.ExecuteNonQuery();
+                        MessageBox.Show("Video deleted successfully!");
+
+                        LoadVideos();
+                    }
+                    else
+                    {
+                        MessageBox.Show("Please select a video to delete.");
+                    }
                 }
-                else
+                catch (Exception ex)
                 {
-                    MessageBox.Show("Please select a video to delete.");
+                    MessageBox.Show("Error: " + ex.Message);
                 }
-            }
-            catch (Exception ex)
-            {
-                MessageBox.Show("Error: " + ex.Message);
-            }
-            finally
-            {
-                connection.Close();
+                finally
+                {
+                    connection.Close();
+                }
             }
         }
+
 
         private void LoadVideos()
         {

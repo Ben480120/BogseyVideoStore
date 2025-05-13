@@ -10,12 +10,15 @@ using System.Windows.Forms;
 using BogseyVideoStore;
 using BogseyVideoStore.Forms;
 using MySql.Data.MySqlClient;
+using BogseyVideoStore.Helpers;
 
 
 namespace BogseyVideoStore
 {
     public partial class CustomerForm : Form
     {
+        CustomerService customerService = new CustomerService();
+
         string connectionString = "server=localhost;database=bvs_db;uid=root;pwd=;";
         DataTable customerTable = new DataTable();
 
@@ -42,131 +45,51 @@ namespace BogseyVideoStore
 
         private void btnAdd_Click(object sender, EventArgs e)
         {
-            MySqlConnection connection = new MySqlConnection(connectionString);
-
-            try
+            if (customerService.AddCustomer(txtCustomerName.Text, txtPhone.Text))
             {
-
-                connection.Open();
-                string query = "INSERT INTO customers (customer_name, phone) VALUES (@name, @phone)";
-                MySqlCommand cmd = new MySqlCommand(query, connection);
-                cmd.Parameters.AddWithValue("@name", txtCustomerName.Text);
-                cmd.Parameters.AddWithValue("@phone", txtPhone.Text);
-
-                cmd.ExecuteNonQuery();
                 MessageBox.Show("Customer added successfully!");
-
-
                 LoadCustomers();
             }
-            catch (Exception ex)
-            {
-                MessageBox.Show("Error: " + ex.Message);
-            }
-            finally
-            {
-                connection.Close();
-            }
-
         }
-
         private void btnEdit_Click(object sender, EventArgs e)
         {
-
-            MySqlConnection connection = new MySqlConnection(connectionString);
-
-            try
+            if (dgvCustomers.SelectedRows.Count > 0)
             {
-                if (dgvCustomers.SelectedRows.Count > 0)
+                int customerId = Convert.ToInt32(dgvCustomers.SelectedRows[0].Cells[0].Value);
+                if (customerService.UpdateCustomer(customerId, txtCustomerName.Text, txtPhone.Text))
                 {
-                    int customerId = Convert.ToInt32(dgvCustomers.SelectedRows[0].Cells[0].Value);
-                    string query = "UPDATE customers SET customer_name = @name, phone = @phone WHERE customer_id = @id";
-                    MySqlCommand cmd = new MySqlCommand(query, connection);
-                    cmd.Parameters.AddWithValue("@name", txtCustomerName.Text);
-                    cmd.Parameters.AddWithValue("@phone", txtPhone.Text);
-                    cmd.Parameters.AddWithValue("@id", customerId);
-
-                    connection.Open();
-                    cmd.ExecuteNonQuery();
                     MessageBox.Show("Customer updated successfully!");
-
-
                     LoadCustomers();
                 }
-                else
-                {
-                    MessageBox.Show("Please select a customer to edit.");
-                }
             }
-            catch (Exception ex)
+            else
             {
-                MessageBox.Show("Error: " + ex.Message);
-            }
-            finally
-            {
-                connection.Close();
+                MessageBox.Show("Please select a customer to edit.");
             }
         }
 
         private void btnDelete_Click(object sender, EventArgs e)
         {
-            MySqlConnection connection = new MySqlConnection(connectionString);
-
-            try
+            if (dgvCustomers.SelectedRows.Count > 0)
             {
-                if (dgvCustomers.SelectedRows.Count > 0)
-                {
-                    int customerId = Convert.ToInt32(dgvCustomers.SelectedRows[0].Cells[0].Value);
-                    string query = "DELETE FROM customers WHERE customer_id = @id";
-                    MySqlCommand cmd = new MySqlCommand(query, connection);
-                    cmd.Parameters.AddWithValue("@id", customerId);
-
-                    connection.Open();
-                    cmd.ExecuteNonQuery();
-                    MessageBox.Show("Customer deleted successfully!");
-
-
-                    LoadCustomers();
-                }
-                else
-                {
-                    MessageBox.Show("Please select a customer to delete.");
-                }
+                int customerId = Convert.ToInt32(dgvCustomers.SelectedRows[0].Cells[0].Value);
+                customerService.DeleteCustomer(customerId);
+                LoadCustomers();
             }
-            catch (Exception ex)
+            else
             {
-                MessageBox.Show("Error: " + ex.Message);
-            }
-            finally
-            {
-                connection.Close();
+                MessageBox.Show("Please select a customer to delete.");
             }
         }
+
 
         private void LoadCustomers()
         {
-            MySqlConnection connection = new MySqlConnection(connectionString);
-            try
-            {
-                connection.Open();
-                string query = "SELECT * FROM customers";
-                MySqlDataAdapter adapter = new MySqlDataAdapter(query, connection);
-
-                customerTable.Clear();
-                adapter.Fill(customerTable);
-
-                dgvCustomers.DataSource = customerTable.DefaultView;
-                dgvCustomers.AutoSizeColumnsMode = DataGridViewAutoSizeColumnsMode.Fill;
-            }
-            catch (Exception ex)
-            {
-                MessageBox.Show("Error: " + ex.Message);
-            }
-            finally
-            {
-                connection.Close();
-            }
+            customerTable = customerService.GetAllCustomers();
+            dgvCustomers.DataSource = customerTable.DefaultView;
+            dgvCustomers.AutoSizeColumnsMode = DataGridViewAutoSizeColumnsMode.Fill;
         }
+
 
         private void CustomerForm_Load(object sender, EventArgs e)
         {
