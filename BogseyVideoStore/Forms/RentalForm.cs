@@ -83,6 +83,8 @@ namespace BogseyVideoStore
             dgvRentals.Rows.Clear();
             dgvRentals.Columns.Clear();
 
+            dgvRentals.Columns.Add("rental_id", "Rental ID");
+            dgvRentals.Columns["rental_id"].Visible = false;
             dgvRentals.Columns.Add("customer", "Customer");
             dgvRentals.Columns.Add("video", "Video");
             dgvRentals.Columns.Add("video_id", "Video ID");
@@ -95,6 +97,7 @@ namespace BogseyVideoStore
 
             string query = @"
         SELECT 
+            r.rental_id,
             c.customer_name AS customer,
             v.title AS video, 
             v.video_id,                    
@@ -117,21 +120,22 @@ namespace BogseyVideoStore
                 while (reader.Read())
                 {
                     dgvRentals.Rows.Add(
-                        reader["customer"].ToString(),
-                        reader["video"].ToString(),
-                        reader["video_id"].ToString(),
-                        Convert.ToDateTime(reader["rent_date"]).ToString("yyyy-MM-dd"),
-                        Convert.ToDateTime(reader["due_date"]).ToString("yyyy-MM-dd"),
-                        reader["return_date"] == DBNull.Value
-                            ? ""
-                            : Convert.ToDateTime(reader["return_date"]).ToString("yyyy-MM-dd"),
-                        reader["total_price"] == DBNull.Value
-                            ? "0.00"
-                            : Convert.ToDecimal(reader["total_price"]).ToString("F2"),
-                        reader["overdue_price"] == DBNull.Value
-                            ? "0.00"
-                            : Convert.ToDecimal(reader["overdue_price"]).ToString("F2")
-                    );
+                    reader["rental_id"].ToString(),
+                    reader["customer"].ToString(),
+                    reader["video"].ToString(),
+                    reader["video_id"].ToString(),
+                    Convert.ToDateTime(reader["rent_date"]).ToString("yyyy-MM-dd"),
+                    Convert.ToDateTime(reader["due_date"]).ToString("yyyy-MM-dd"),
+                    reader["return_date"] == DBNull.Value
+                        ? ""
+                        : Convert.ToDateTime(reader["return_date"]).ToString("yyyy-MM-dd"),
+                    reader["total_price"] == DBNull.Value
+                        ? "0.00"
+                        : Convert.ToDecimal(reader["total_price"]).ToString("F2"),
+                    reader["overdue_price"] == DBNull.Value
+                        ? "0.00"
+                        : Convert.ToDecimal(reader["overdue_price"]).ToString("F2")
+                );
                 }
             }
         }
@@ -179,6 +183,8 @@ namespace BogseyVideoStore
         private void btnRent_Click(object sender, EventArgs e)
         {
             MySqlConnection connection = new MySqlConnection(connectionString);
+
+            // Check if both a customer and a video are selected first
             if (cmbCustomer.SelectedItem == null || cmbVideo.SelectedItem == null)
             {
                 MessageBox.Show("Please select both a customer and a video.");
@@ -187,6 +193,25 @@ namespace BogseyVideoStore
 
             var customer = (ComboBoxItem)cmbCustomer.SelectedItem;
             var video = (ComboBoxItem)cmbVideo.SelectedItem;
+
+            int availableStock = 0;
+
+            // Check available stock for the selected video
+            using (var conn = new MySqlConnection(connectionString))
+            {
+                conn.Open();
+                var checkStockCmd = new MySqlCommand("SELECT quantity_in FROM videos WHERE video_id = @id", conn);
+                checkStockCmd.Parameters.AddWithValue("@id", video.Value);
+                var result = checkStockCmd.ExecuteScalar();
+                if (result != null && result != DBNull.Value)
+                    availableStock = Convert.ToInt32(result);
+            }
+
+            if (availableStock <= 0)
+            {
+                MessageBox.Show("This video is out of stock and cannot be rented.");
+                return;
+            }
 
             LoadVideoDetails(int.Parse(video.Value));
 
@@ -198,8 +223,8 @@ namespace BogseyVideoStore
             decimal overduePrice = totalPrice - basePrice;
             if (overduePrice < 0) overduePrice = 0;
 
-            var result = MessageBox.Show($"Total Price: ₱{totalPrice}\nProceed with rental?", "Confirm Rental", MessageBoxButtons.YesNo);
-            if (result == DialogResult.No) return;
+            var confirmResult = MessageBox.Show($"Total Price: ₱{totalPrice}\nProceed with rental?", "Confirm Rental", MessageBoxButtons.YesNo);
+            if (confirmResult == DialogResult.No) return;
 
             using (var conn = new MySqlConnection(connectionString))
             {
@@ -207,7 +232,9 @@ namespace BogseyVideoStore
                 string query = @"INSERT INTO rentals 
                  (customer_id, video_id, rent_date, due_date, total_price, overdue_price)
                  VALUES (@customer_id, @video_id, @rent_date, @due_date, @total_price, @overdue_price)";
+
                 var cmd = new MySqlCommand(query, conn);
+
                 cmd.Parameters.AddWithValue("@customer_id", customer.Value);
                 cmd.Parameters.AddWithValue("@video_id", video.Value);
                 cmd.Parameters.AddWithValue("@rent_date", rentDate);
@@ -215,6 +242,10 @@ namespace BogseyVideoStore
                 cmd.Parameters.AddWithValue("@total_price", totalPrice);
                 cmd.Parameters.AddWithValue("@overdue_price", overduePrice);
                 cmd.ExecuteNonQuery();
+
+                var updateStockCmd = new MySqlCommand("UPDATE videos SET quantity_in = quantity_in - 1, quantity_out = quantity_out + 1 WHERE video_id = @id", conn);
+                updateStockCmd.Parameters.AddWithValue("@id", video.Value);
+                updateStockCmd.ExecuteNonQuery();
             }
 
             MessageBox.Show("Rental recorded successfully!");
@@ -234,7 +265,6 @@ namespace BogseyVideoStore
             {
                 conn.Open();
 
-                // Get rent_date, due_date, video_id
                 string getDetailsQuery = "SELECT rent_date, due_date, video_id FROM rentals WHERE rental_id = @id";
                 var getCmd = new MySqlCommand(getDetailsQuery, conn);
                 getCmd.Parameters.AddWithValue("@id", rentalId);
@@ -246,9 +276,8 @@ namespace BogseyVideoStore
                         DateTime dueDate = Convert.ToDateTime(reader["due_date"]);
                         int videoId = Convert.ToInt32(reader["video_id"]);
 
-                        reader.Close(); // important to close before new command
-
-                        // Load category and rental_days_allowed again to get base price
+                        reader.Close(); 
+                      
                         LoadVideoDetails(videoId);
 
                         DateTime returnDate = DateTime.Now;
@@ -256,7 +285,6 @@ namespace BogseyVideoStore
                         int overdueDays = totalDays - rentalDaysAllowed;
                         decimal overduePrice = (overdueDays > 0) ? overdueDays * 5 : 0;
 
-                        // Update return_date and overdue_price
                         string updateQuery = @"UPDATE rentals 
                                        SET return_date = @return_date, overdue_price = @overdue_price
                                        WHERE rental_id = @id";
@@ -265,6 +293,10 @@ namespace BogseyVideoStore
                         updateCmd.Parameters.AddWithValue("@overdue_price", overduePrice);
                         updateCmd.Parameters.AddWithValue("@id", rentalId);
                         updateCmd.ExecuteNonQuery();
+
+                        var updateStockCmd = new MySqlCommand("UPDATE videos SET quantity_in = quantity_in + 1, quantity_out = quantity_out - 1 WHERE video_id = @id", conn);
+                        updateStockCmd.Parameters.AddWithValue("@id", videoId);
+                        updateStockCmd.ExecuteNonQuery();
 
                         MessageBox.Show($"Video returned.\nOverdue charge: ₱{overduePrice}");
                     }
@@ -372,7 +404,39 @@ namespace BogseyVideoStore
             }
 
             int rentalId = Convert.ToInt32(dgvRentals.SelectedRows[0].Cells["rental_id"].Value);
+            int videoId = 0;
+            bool notReturned = false;
 
+            // Get video_id and return_date for the selected rental
+            using (var conn = new MySqlConnection(connectionString))
+            {
+                conn.Open();
+                var getCmd = new MySqlCommand("SELECT video_id, return_date FROM rentals WHERE rental_id = @id", conn);
+                getCmd.Parameters.AddWithValue("@id", rentalId);
+                using (var reader = getCmd.ExecuteReader())
+                {
+                    if (reader.Read())
+                    {
+                        videoId = Convert.ToInt32(reader["video_id"]);
+                        notReturned = reader["return_date"] == DBNull.Value;
+                    }
+                }
+            }
+
+            // If rental not returned, update stock
+            if (notReturned)
+            {
+                using (var conn = new MySqlConnection(connectionString))
+                {
+                    conn.Open();
+                    var updateStockCmd = new MySqlCommand(
+                        "UPDATE videos SET quantity_in = quantity_in + 1, quantity_out = quantity_out - 1 WHERE video_id = @id", conn);
+                    updateStockCmd.Parameters.AddWithValue("@id", videoId);
+                    updateStockCmd.ExecuteNonQuery();
+                }
+            }
+
+            // Delete the rental
             using (var conn = new MySqlConnection(connectionString))
             {
                 conn.Open();
@@ -385,6 +449,7 @@ namespace BogseyVideoStore
             LoadRentals();
         }
 
+
         private void label4_Click(object sender, EventArgs e)
         {
 
@@ -396,6 +461,8 @@ namespace BogseyVideoStore
             dgvRentals.Rows.Clear();
             dgvRentals.Columns.Clear();
 
+            dgvRentals.Columns.Add("rental_id", "Rental ID");
+            dgvRentals.Columns["rental_id"].Visible = false;
             dgvRentals.Columns.Add("customer", "Customer");
             dgvRentals.Columns.Add("video", "Video");
             dgvRentals.Columns.Add("rent_date", "Rent Date");
@@ -404,14 +471,13 @@ namespace BogseyVideoStore
             dgvRentals.Columns.Add("total_price", "Total Price");
             dgvRentals.Columns.Add("overdue_price", "Overdue Price");
 
-
-            string query = @"SELECT r.total_price, r.overdue_price, c.customer_name AS customer,
-                 v.title AS video, r.rent_date, r.due_date, r.return_date
-                 FROM rentals r
-                 JOIN customers c ON r.customer_id = c.customer_id
-                 JOIN videos v ON r.video_id = v.video_id
-                 WHERE c.customer_name LIKE @search OR v.title LIKE @search";
-
+            string query = @"SELECT r.rental_id, c.customer_name AS customer,
+         v.title AS video, r.rent_date, r.due_date, r.return_date,
+         r.total_price, r.overdue_price
+         FROM rentals r
+         JOIN customers c ON r.customer_id = c.customer_id
+         JOIN videos v ON r.video_id = v.video_id
+         WHERE c.customer_name LIKE @search OR v.title LIKE @search";
 
             using (var conn = new MySqlConnection(connectionString))
             {
@@ -423,6 +489,7 @@ namespace BogseyVideoStore
                 while (reader.Read())
                 {
                     dgvRentals.Rows.Add(
+                        reader["rental_id"].ToString(),
                         reader["customer"].ToString(),
                         reader["video"].ToString(),
                         Convert.ToDateTime(reader["rent_date"]).ToString("yyyy-MM-dd"),
@@ -434,6 +501,7 @@ namespace BogseyVideoStore
                 }
             }
         }
+
 
         private void btnSearch_Click(object sender, EventArgs e)
         {
@@ -521,7 +589,10 @@ namespace BogseyVideoStore
         private void pictureBoxBack_Click(object sender, EventArgs e)
         {
             var mainForm = new MainForm();
+            mainForm.FormClosed += (s, args) => this.Show();
             mainForm.Show();
+            this.Hide();
         }
+
     }
 }

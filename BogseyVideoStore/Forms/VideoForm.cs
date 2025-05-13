@@ -34,49 +34,137 @@ namespace BogseyVideoStore
 
         private void btnAdd_Click(object sender, EventArgs e)
         {
+            using (MySqlConnection connection = new MySqlConnection(connectionString))
+            {
+                try
+                {
+                    connection.Open();
 
+                    // Check for duplicate title and category
+                    string checkQuery = "SELECT COUNT(*) FROM videos WHERE title = @title AND category = @category";
+                    MySqlCommand checkCmd = new MySqlCommand(checkQuery, connection);
+                    checkCmd.Parameters.AddWithValue("@title", txtVideoTitle.Text);
+                    checkCmd.Parameters.AddWithValue("@category", cmbCategory.SelectedItem?.ToString() ?? "");
+
+                    int count = Convert.ToInt32(checkCmd.ExecuteScalar());
+                    if (count > 0)
+                    {
+                        MessageBox.Show("A video with the same title and category already exists.");
+                        return;
+                    }
+
+                    // Insert if not duplicate
+                    string query = "INSERT INTO videos (title, category, quantity_in, quantity_out, rental_days_allowed) VALUES (@title, @category, @quantity_in, @quantity_out, @rental_days_allowed)";
+                    MySqlCommand cmd = new MySqlCommand(query, connection);
+                    cmd.Parameters.AddWithValue("@title", txtVideoTitle.Text);
+                    cmd.Parameters.AddWithValue("@category", cmbCategory.SelectedItem?.ToString() ?? "");
+                    cmd.Parameters.AddWithValue("@quantity_in", txtQuantityIn.Text);
+                    cmd.Parameters.AddWithValue("@quantity_out", txtQuantityOut.Text);
+                    cmd.Parameters.AddWithValue("@rental_days_allowed", cmbRentalDaysAllowed.SelectedItem.ToString());
+
+                    cmd.ExecuteNonQuery();
+                    MessageBox.Show("Video added successfully!");
+
+                    LoadVideos();
+                }
+                catch (Exception ex)
+                {
+                    MessageBox.Show("Error: " + ex.Message);
+                }
+            }
         }
 
         private void btnEdit_Click(object sender, EventArgs e)
         {
+            MySqlConnection connection = new MySqlConnection(connectionString);
+            try
+            {
+                if (dgvVideos.SelectedRows.Count > 0)
+                {
+                    int videoId = Convert.ToInt32(dgvVideos.SelectedRows[0].Cells[0].Value);
+                    string query = "UPDATE videos SET title = @title, category = @category, quantity_in = @quantity_in, quantity_out = @quantity_out, rental_days_allowed = @rental_days_allowed WHERE video_id = @id";
+                    MySqlCommand cmd = new MySqlCommand(query, connection);
+                    cmd.Parameters.AddWithValue("@title", txtVideoTitle.Text);
+                    cmd.Parameters.AddWithValue("@category", cmbCategory.SelectedItem.ToString());
+                    cmd.Parameters.AddWithValue("@quantity_in", txtQuantityIn.Text);
+                    cmd.Parameters.AddWithValue("@quantity_out", txtQuantityOut.Text);
+                    cmd.Parameters.AddWithValue("@rental_days_allowed", cmbRentalDaysAllowed.SelectedItem.ToString());
+                    cmd.Parameters.AddWithValue("@id", videoId);
 
+                    connection.Open();
+                    cmd.ExecuteNonQuery();
+                    MessageBox.Show("Video updated successfully!");
+
+                    LoadVideos();
+                }
+                else
+                {
+                    MessageBox.Show("Please select a video to edit.");
+                }
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show("Error: " + ex.Message);
+            }
+            finally
+            {
+                connection.Close();
+            }
         }
 
         private void btnDelete_Click(object sender, EventArgs e)
         {
+            MySqlConnection connection = new MySqlConnection(connectionString);
+            try
+            {
+                if (dgvVideos.SelectedRows.Count > 0)
+                {
+                    int videoId = Convert.ToInt32(dgvVideos.SelectedRows[0].Cells[0].Value);
+                    string query = "DELETE FROM videos WHERE video_id = @id";
+                    MySqlCommand cmd = new MySqlCommand(query, connection);
+                    cmd.Parameters.AddWithValue("@id", videoId);
 
+                    connection.Open();
+                    cmd.ExecuteNonQuery();
+                    MessageBox.Show("Video deleted successfully!");
+
+                    LoadVideos();
+                }
+                else
+                {
+                    MessageBox.Show("Please select a video to delete.");
+                }
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show("Error: " + ex.Message);
+            }
+            finally
+            {
+                connection.Close();
+            }
         }
 
         private void LoadVideos()
         {
             dgvVideos.AutoSizeColumnsMode = DataGridViewAutoSizeColumnsMode.Fill;
 
-            dgvVideos.BackgroundColor = Color.FromArgb(28, 28, 28); 
-            dgvVideos.GridColor = Color.FromArgb(212, 175, 55); 
-
-            dgvVideos.ColumnHeadersDefaultCellStyle.BackColor = Color.FromArgb(212, 175, 55); 
-            dgvVideos.ColumnHeadersDefaultCellStyle.ForeColor = Color.White; 
-            dgvVideos.ColumnHeadersDefaultCellStyle.Font = new Font("Segoe UI", 10, FontStyle.Bold);
-
-            dgvVideos.DefaultCellStyle.BackColor = Color.FromArgb(46, 46, 46); 
-            dgvVideos.DefaultCellStyle.ForeColor = Color.White; 
-            dgvVideos.AlternatingRowsDefaultCellStyle.BackColor = Color.FromArgb(60, 60, 60); 
-
-            dgvVideos.DefaultCellStyle.SelectionBackColor = Color.FromArgb(255, 140, 0); 
-            dgvVideos.DefaultCellStyle.SelectionForeColor = Color.Black; 
-            
-            dgvVideos.BorderStyle = BorderStyle.Fixed3D;
-
             MySqlConnection connection = new MySqlConnection(connectionString);
+
             try
             {
                 connection.Open();
-                string query = "SELECT * FROM videos";
+                string query = "SELECT video_id, title, category, quantity_in, quantity_out, rental_days_allowed FROM videos";
                 MySqlDataAdapter adapter = new MySqlDataAdapter(query, connection);
                 DataTable dt = new DataTable();
                 adapter.Fill(dt);
 
                 dgvVideos.DataSource = dt;
+
+                if (dgvVideos.Columns.Contains("video_id"))
+                {
+                    dgvVideos.Columns["video_id"].Visible = false;
+                }
             }
             catch (Exception ex)
             {
@@ -95,7 +183,11 @@ namespace BogseyVideoStore
 
         private void btnClear_Click(object sender, EventArgs e)
         {
-
+            txtVideoTitle.Clear();
+            cmbCategory.SelectedIndex = -1;
+            txtQuantityIn.Clear();
+            txtQuantityOut.Clear();
+            cmbRentalDaysAllowed.SelectedIndex = 0;
         }
 
         private void txtRentalDaysAllowed_TextChanged(object sender, EventArgs e)
@@ -115,7 +207,8 @@ namespace BogseyVideoStore
                 try
                 {
                     connection.Open();
-                    string searchQuery = "SELECT * FROM videos WHERE title LIKE @search";
+
+                    string searchQuery = "SELECT video_id, title, category, quantity_in, quantity_out, rental_days_allowed FROM videos WHERE title LIKE @search";
                     MySqlCommand cmd = new MySqlCommand(searchQuery, connection);
                     cmd.Parameters.AddWithValue("@search", "%" + txtSearchTitle.Text + "%");
 
@@ -138,7 +231,7 @@ namespace BogseyVideoStore
             if (e.KeyCode == Keys.Enter)
             {
                 btnSearch.PerformClick();
-                e.SuppressKeyPress = true; // Prevents the ding sound
+                e.SuppressKeyPress = true;
             }
         }
 
@@ -179,7 +272,10 @@ namespace BogseyVideoStore
         private void pictureBoxBack_Click(object sender, EventArgs e)
         {
             var mainForm = new MainForm();
+            mainForm.FormClosed += (s, args) => this.Show();
             mainForm.Show();
+            this.Hide();
         }
+
     }
 }

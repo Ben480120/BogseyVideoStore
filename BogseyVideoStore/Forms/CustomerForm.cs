@@ -244,7 +244,10 @@ namespace BogseyVideoStore
         private void pictureBoxBack_Click(object sender, EventArgs e)
         {
             var mainForm = new MainForm();
+            mainForm.FormClosed += (s, args) => this.Show();
             mainForm.Show();
+            this.Hide();
         }
+
     }
 }

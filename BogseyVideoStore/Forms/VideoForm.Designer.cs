@@ -71,7 +71,7 @@
             this.label1.BackColor = System.Drawing.Color.Transparent;
             this.label1.Font = new System.Drawing.Font("Elephant", 14.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.label1.ForeColor = System.Drawing.SystemColors.ButtonHighlight;
-            this.label1.Location = new System.Drawing.Point(151, 149);
+            this.label1.Location = new System.Drawing.Point(168, 149);
             this.label1.Name = "label1";
             this.label1.Size = new System.Drawing.Size(121, 25);
             this.label1.TabIndex = 23;
@@ -82,7 +82,7 @@
             this.btnSearch.BackColor = System.Drawing.SystemColors.ButtonHighlight;
             this.btnSearch.BackgroundImageLayout = System.Windows.Forms.ImageLayout.None;
             this.btnSearch.Font = new System.Drawing.Font("Elephant", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.btnSearch.Location = new System.Drawing.Point(752, 223);
+            this.btnSearch.Location = new System.Drawing.Point(769, 223);
             this.btnSearch.Name = "btnSearch";
             this.btnSearch.Size = new System.Drawing.Size(122, 42);
             this.btnSearch.TabIndex = 40;
@@ -94,7 +94,7 @@
             // 
             this.txtSearchTitle.BackColor = System.Drawing.SystemColors.Window;
             this.txtSearchTitle.Font = new System.Drawing.Font("Palatino Linotype", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.txtSearchTitle.Location = new System.Drawing.Point(691, 188);
+            this.txtSearchTitle.Location = new System.Drawing.Point(708, 188);
             this.txtSearchTitle.Name = "txtSearchTitle";
             this.txtSearchTitle.Size = new System.Drawing.Size(255, 29);
             this.txtSearchTitle.TabIndex = 39;
@@ -107,7 +107,7 @@
             this.label7.BackColor = System.Drawing.Color.Transparent;
             this.label7.Font = new System.Drawing.Font("Elephant", 14.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.label7.ForeColor = System.Drawing.SystemColors.ButtonHighlight;
-            this.label7.Location = new System.Drawing.Point(601, 188);
+            this.label7.Location = new System.Drawing.Point(618, 188);
             this.label7.Name = "label7";
             this.label7.Size = new System.Drawing.Size(84, 25);
             this.label7.TabIndex = 38;
@@ -116,7 +116,7 @@
             // cmbRentalDaysAllowed
             // 
             this.cmbRentalDaysAllowed.FormattingEnabled = true;
-            this.cmbRentalDaysAllowed.Location = new System.Drawing.Point(381, 312);
+            this.cmbRentalDaysAllowed.Location = new System.Drawing.Point(398, 312);
             this.cmbRentalDaysAllowed.Name = "cmbRentalDaysAllowed";
             this.cmbRentalDaysAllowed.Size = new System.Drawing.Size(44, 21);
             this.cmbRentalDaysAllowed.TabIndex = 37;
@@ -125,7 +125,7 @@
             // 
             this.dgvVideos.BackgroundColor = System.Drawing.Color.SeaShell;
             this.dgvVideos.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
-            this.dgvVideos.Location = new System.Drawing.Point(153, 412);
+            this.dgvVideos.Location = new System.Drawing.Point(170, 412);
             this.dgvVideos.Name = "dgvVideos";
             this.dgvVideos.Size = new System.Drawing.Size(789, 217);
             this.dgvVideos.TabIndex = 36;
@@ -135,7 +135,7 @@
             this.btnDelete.BackColor = System.Drawing.SystemColors.ButtonHighlight;
             this.btnDelete.BackgroundImageLayout = System.Windows.Forms.ImageLayout.None;
             this.btnDelete.Font = new System.Drawing.Font("Elephant", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.btnDelete.Location = new System.Drawing.Point(563, 345);
+            this.btnDelete.Location = new System.Drawing.Point(580, 345);
             this.btnDelete.Name = "btnDelete";
             this.btnDelete.Size = new System.Drawing.Size(122, 42);
             this.btnDelete.TabIndex = 35;
@@ -148,7 +148,7 @@
             this.btnClear.BackColor = System.Drawing.SystemColors.ButtonHighlight;
             this.btnClear.BackgroundImageLayout = System.Windows.Forms.ImageLayout.None;
             this.btnClear.Font = new System.Drawing.Font("Elephant", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.btnClear.Location = new System.Drawing.Point(691, 345);
+            this.btnClear.Location = new System.Drawing.Point(708, 345);
             this.btnClear.Name = "btnClear";
             this.btnClear.Size = new System.Drawing.Size(122, 42);
             this.btnClear.TabIndex = 34;
@@ -161,7 +161,7 @@
             this.btnEdit.BackColor = System.Drawing.SystemColors.ButtonHighlight;
             this.btnEdit.BackgroundImageLayout = System.Windows.Forms.ImageLayout.None;
             this.btnEdit.Font = new System.Drawing.Font("Elephant", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.btnEdit.Location = new System.Drawing.Point(435, 345);
+            this.btnEdit.Location = new System.Drawing.Point(452, 345);
             this.btnEdit.Name = "btnEdit";
             this.btnEdit.Size = new System.Drawing.Size(122, 42);
             this.btnEdit.TabIndex = 33;
@@ -174,7 +174,7 @@
             this.btnAdd.BackColor = System.Drawing.SystemColors.ButtonHighlight;
             this.btnAdd.BackgroundImageLayout = System.Windows.Forms.ImageLayout.None;
             this.btnAdd.Font = new System.Drawing.Font("Elephant", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.btnAdd.Location = new System.Drawing.Point(307, 345);
+            this.btnAdd.Location = new System.Drawing.Point(324, 345);
             this.btnAdd.Name = "btnAdd";
             this.btnAdd.Size = new System.Drawing.Size(122, 42);
             this.btnAdd.TabIndex = 32;
@@ -188,7 +188,7 @@
             this.label5.BackColor = System.Drawing.Color.Transparent;
             this.label5.Font = new System.Drawing.Font("Elephant", 14.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.label5.ForeColor = System.Drawing.SystemColors.ButtonHighlight;
-            this.label5.Location = new System.Drawing.Point(151, 311);
+            this.label5.Location = new System.Drawing.Point(168, 311);
             this.label5.Name = "label5";
             this.label5.Size = new System.Drawing.Size(214, 25);
             this.label5.TabIndex = 31;
@@ -198,7 +198,7 @@
             // 
             this.txtQuantityOut.BackColor = System.Drawing.SystemColors.Window;
             this.txtQuantityOut.Font = new System.Drawing.Font("Palatino Linotype", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.txtQuantityOut.Location = new System.Drawing.Point(342, 268);
+            this.txtQuantityOut.Location = new System.Drawing.Point(359, 268);
             this.txtQuantityOut.Name = "txtQuantityOut";
             this.txtQuantityOut.Size = new System.Drawing.Size(50, 29);
             this.txtQuantityOut.TabIndex = 30;
@@ -209,7 +209,7 @@
             this.label4.BackColor = System.Drawing.Color.Transparent;
             this.label4.Font = new System.Drawing.Font("Elephant", 14.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.label4.ForeColor = System.Drawing.SystemColors.ButtonHighlight;
-            this.label4.Location = new System.Drawing.Point(151, 272);
+            this.label4.Location = new System.Drawing.Point(168, 272);
             this.label4.Name = "label4";
             this.label4.Size = new System.Drawing.Size(144, 25);
             this.label4.TabIndex = 29;
@@ -219,7 +219,7 @@
             // 
             this.txtQuantityIn.BackColor = System.Drawing.SystemColors.Window;
             this.txtQuantityIn.Font = new System.Drawing.Font("Palatino Linotype", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.txtQuantityIn.Location = new System.Drawing.Point(342, 227);
+            this.txtQuantityIn.Location = new System.Drawing.Point(359, 227);
             this.txtQuantityIn.Name = "txtQuantityIn";
             this.txtQuantityIn.Size = new System.Drawing.Size(50, 29);
             this.txtQuantityIn.TabIndex = 28;
@@ -230,7 +230,7 @@
             this.label3.BackColor = System.Drawing.Color.Transparent;
             this.label3.Font = new System.Drawing.Font("Elephant", 14.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.label3.ForeColor = System.Drawing.SystemColors.ButtonHighlight;
-            this.label3.Location = new System.Drawing.Point(151, 231);
+            this.label3.Location = new System.Drawing.Point(168, 231);
             this.label3.Name = "label3";
             this.label3.Size = new System.Drawing.Size(184, 25);
             this.label3.TabIndex = 27;
@@ -242,7 +242,7 @@
             this.label2.BackColor = System.Drawing.Color.Transparent;
             this.label2.Font = new System.Drawing.Font("Elephant", 14.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.label2.ForeColor = System.Drawing.SystemColors.ButtonHighlight;
-            this.label2.Location = new System.Drawing.Point(151, 191);
+            this.label2.Location = new System.Drawing.Point(168, 191);
             this.label2.Name = "label2";
             this.label2.Size = new System.Drawing.Size(161, 25);
             this.label2.TabIndex = 26;
@@ -256,7 +256,7 @@
             this.cmbCategory.Items.AddRange(new object[] {
             "VCD",
             "DVD"});
-            this.cmbCategory.Location = new System.Drawing.Point(342, 187);
+            this.cmbCategory.Location = new System.Drawing.Point(359, 187);
             this.cmbCategory.Name = "cmbCategory";
             this.cmbCategory.Size = new System.Drawing.Size(123, 30);
             this.cmbCategory.TabIndex = 25;
@@ -265,7 +265,7 @@
             // 
             this.txtVideoTitle.BackColor = System.Drawing.SystemColors.Window;
             this.txtVideoTitle.Font = new System.Drawing.Font("Palatino Linotype", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.txtVideoTitle.Location = new System.Drawing.Point(342, 145);
+            this.txtVideoTitle.Location = new System.Drawing.Point(359, 145);
             this.txtVideoTitle.Name = "txtVideoTitle";
             this.txtVideoTitle.Size = new System.Drawing.Size(255, 29);
             this.txtVideoTitle.TabIndex = 24;

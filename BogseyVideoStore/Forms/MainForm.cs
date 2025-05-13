@@ -29,19 +29,26 @@ namespace BogseyVideoStore.Forms
         private void btnCustomerForm_Click(object sender, EventArgs e)
         {
             var customerForm = new CustomerForm();
+            customerForm.FormClosed += (s, args) => this.Show();
             customerForm.Show();
+            this.Hide();
+
         }
 
         private void btnVideoForm_Click(object sender, EventArgs e)
         {
-            var videoForm = new VideoForm();
-            videoForm.Show();
+            var customerForm = new CustomerForm();
+            customerForm.FormClosed += (s, args) => this.Show();
+            customerForm.Show();
+            this.Hide();
         }
 
         private void btnRentalForm_Click(object sender, EventArgs e)
         {
-            var rentalForm = new RentalForm();
-            rentalForm.Show();
+            var customerForm = new CustomerForm();
+            customerForm.FormClosed += (s, args) => this.Show();
+            customerForm.Show();
+            this.Hide();
         }
 
         private void pictureBoxShutdown_Click(object sender, EventArgs e)
