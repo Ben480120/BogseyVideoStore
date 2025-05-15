@@ -93,7 +93,6 @@ namespace BogseyVideoStore
 
         private void CustomerForm_Load(object sender, EventArgs e)
         {
-
             LoadCustomers();
 
             AutoCompleteStringCollection customerNames = new AutoCompleteStringCollection();
@@ -172,5 +171,9 @@ namespace BogseyVideoStore
             this.Hide();
         }
 
+        private void txtCustomerName_TextChanged_1(object sender, EventArgs e)
+        {
+            dgvCustomers.DataSource = customerService.SearchCustomers(txtCustomerName.Text);
+        }
     }
 }

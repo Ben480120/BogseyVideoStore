@@ -141,6 +141,7 @@
             this.txtCustomerName.Name = "txtCustomerName";
             this.txtCustomerName.Size = new System.Drawing.Size(255, 29);
             this.txtCustomerName.TabIndex = 11;
+            this.txtCustomerName.TextChanged += new System.EventHandler(this.txtCustomerName_TextChanged_1);
             // 
             // label1
             // 

@@ -133,6 +133,8 @@
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Service Class\CustomerService.cs" />
+    <Compile Include="Service Class\RentalService.cs" />
+    <Compile Include="Service Class\VideoService.cs" />
     <EmbeddedResource Include="Forms\CustomerForm.resx">
       <DependentUpon>CustomerForm.cs</DependentUpon>
     </EmbeddedResource>
@@ -183,6 +185,11 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="Resources\BackIcon.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\BVS Logo.jpg" />
+    <Content Include="Resources\bvsogo.jpg" />
+    <None Include="Resources\logo.bmp" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

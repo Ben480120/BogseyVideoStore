@@ -32,6 +32,9 @@ namespace BogseyVideoStore
 
             // Border Style
             dgv.BorderStyle = BorderStyle.None; // Remove the white border
+
+            //Auto Size
+            dgv.AutoSizeColumnsMode = DataGridViewAutoSizeColumnsMode.Fill;
         }
 
 

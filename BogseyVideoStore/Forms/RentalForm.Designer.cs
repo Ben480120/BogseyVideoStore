@@ -44,6 +44,7 @@
             this.label2 = new System.Windows.Forms.Label();
             this.cmbCustomer = new System.Windows.Forms.ComboBox();
             this.pictureBoxBack = new System.Windows.Forms.PictureBox();
+            this.btnPrintReceipt = new System.Windows.Forms.Button();
             ((System.ComponentModel.ISupportInitialize)(this.pictureBoxShutdown)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.dgvRentals)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.numDays)).BeginInit();
@@ -65,7 +66,7 @@
             // btnSearch
             // 
             this.btnSearch.BackColor = System.Drawing.SystemColors.ButtonHighlight;
-            this.btnSearch.Font = new System.Drawing.Font("Elephant", 9.75F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.btnSearch.Font = new System.Drawing.Font("Elephant", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.btnSearch.Location = new System.Drawing.Point(696, 218);
             this.btnSearch.Name = "btnSearch";
             this.btnSearch.Size = new System.Drawing.Size(122, 42);
@@ -99,7 +100,7 @@
             // btnDelete
             // 
             this.btnDelete.BackColor = System.Drawing.SystemColors.ButtonHighlight;
-            this.btnDelete.Font = new System.Drawing.Font("Elephant", 9.75F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.btnDelete.Font = new System.Drawing.Font("Elephant", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.btnDelete.Location = new System.Drawing.Point(755, 292);
             this.btnDelete.Name = "btnDelete";
             this.btnDelete.Size = new System.Drawing.Size(122, 42);
@@ -111,8 +112,8 @@
             // btnEdit
             // 
             this.btnEdit.BackColor = System.Drawing.SystemColors.ButtonHighlight;
-            this.btnEdit.Font = new System.Drawing.Font("Elephant", 9.75F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.btnEdit.Location = new System.Drawing.Point(554, 292);
+            this.btnEdit.Font = new System.Drawing.Font("Elephant", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.btnEdit.Location = new System.Drawing.Point(445, 292);
             this.btnEdit.Name = "btnEdit";
             this.btnEdit.Size = new System.Drawing.Size(122, 42);
             this.btnEdit.TabIndex = 43;
@@ -123,8 +124,8 @@
             // btnReturn
             // 
             this.btnReturn.BackColor = System.Drawing.SystemColors.ButtonHighlight;
-            this.btnReturn.Font = new System.Drawing.Font("Elephant", 9.75F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.btnReturn.Location = new System.Drawing.Point(353, 292);
+            this.btnReturn.Font = new System.Drawing.Font("Elephant", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.btnReturn.Location = new System.Drawing.Point(297, 292);
             this.btnReturn.Name = "btnReturn";
             this.btnReturn.Size = new System.Drawing.Size(122, 42);
             this.btnReturn.TabIndex = 42;
@@ -135,7 +136,7 @@
             // btnRent
             // 
             this.btnRent.BackColor = System.Drawing.SystemColors.ButtonHighlight;
-            this.btnRent.Font = new System.Drawing.Font("Elephant", 9.75F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.btnRent.Font = new System.Drawing.Font("Elephant", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.btnRent.Location = new System.Drawing.Point(152, 292);
             this.btnRent.Name = "btnRent";
             this.btnRent.Size = new System.Drawing.Size(122, 42);
@@ -148,9 +149,9 @@
             // 
             this.dgvRentals.BackgroundColor = System.Drawing.SystemColors.Control;
             this.dgvRentals.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
-            this.dgvRentals.Location = new System.Drawing.Point(152, 356);
+            this.dgvRentals.Location = new System.Drawing.Point(101, 356);
             this.dgvRentals.Name = "dgvRentals";
-            this.dgvRentals.Size = new System.Drawing.Size(725, 259);
+            this.dgvRentals.Size = new System.Drawing.Size(835, 259);
             this.dgvRentals.TabIndex = 40;
             this.dgvRentals.CellContentClick += new System.Windows.Forms.DataGridViewCellEventHandler(this.dgvRentals_CellContentClick);
             // 
@@ -253,12 +254,25 @@
             this.pictureBoxBack.TabStop = false;
             this.pictureBoxBack.Click += new System.EventHandler(this.pictureBoxBack_Click);
             // 
+            // btnPrintReceipt
+            // 
+            this.btnPrintReceipt.BackColor = System.Drawing.SystemColors.ButtonHighlight;
+            this.btnPrintReceipt.Font = new System.Drawing.Font("Elephant", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.btnPrintReceipt.Location = new System.Drawing.Point(599, 292);
+            this.btnPrintReceipt.Name = "btnPrintReceipt";
+            this.btnPrintReceipt.Size = new System.Drawing.Size(122, 42);
+            this.btnPrintReceipt.TabIndex = 50;
+            this.btnPrintReceipt.Text = "Print Receipt";
+            this.btnPrintReceipt.UseVisualStyleBackColor = false;
+            this.btnPrintReceipt.Click += new System.EventHandler(this.btnPrintReceipt_Click);
+            // 
             // RentalForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.BackgroundImage = global::BogseyVideoStore.Properties.Resources.bg1;
             this.ClientSize = new System.Drawing.Size(1041, 641);
+            this.Controls.Add(this.btnPrintReceipt);
             this.Controls.Add(this.pictureBoxBack);
             this.Controls.Add(this.pictureBoxShutdown);
             this.Controls.Add(this.btnSearch);
@@ -307,5 +321,6 @@
         private System.Windows.Forms.Label label2;
         private System.Windows.Forms.ComboBox cmbCustomer;
         private System.Windows.Forms.PictureBox pictureBoxBack;
+        private System.Windows.Forms.Button btnPrintReceipt;
     }
 }

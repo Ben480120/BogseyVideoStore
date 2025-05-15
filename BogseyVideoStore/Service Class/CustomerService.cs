@@ -28,6 +28,26 @@ namespace BogseyVideoStore.Helpers
             }
             return table;
         }
+        public DataTable SearchCustomers(string name)
+        {
+            DataTable table = new DataTable();
+            using (var connection = new MySqlConnection(connectionString))
+            {
+                try
+                {
+                    connection.Open();
+                    string query = "SELECT * FROM customers WHERE customer_name LIKE @name";
+                    MySqlDataAdapter adapter = new MySqlDataAdapter(query, connection);
+                    adapter.SelectCommand.Parameters.AddWithValue("@name", "%" + name + "%");
+                    adapter.Fill(table);
+                }
+                catch (Exception ex)
+                {
+                    MessageBox.Show("Error: " + ex.Message);
+                }
+            }
+            return table;
+        }
 
         public bool AddCustomer(string name, string phone)
         {
@@ -93,7 +113,6 @@ namespace BogseyVideoStore.Helpers
                 {
                     connection.Open();
 
-                    // Check for duplicate name (excluding current customer)
                     string checkQuery = "SELECT COUNT(*) FROM customers WHERE customer_name = @name AND customer_id <> @id";
                     MySqlCommand checkCmd = new MySqlCommand(checkQuery, connection);
                     checkCmd.Parameters.AddWithValue("@name", name);

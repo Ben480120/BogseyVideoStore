@@ -10,11 +10,15 @@ using System.Threading.Tasks;
 using System.Windows.Forms;
 using BogseyVideoStore.Forms;
 using MySql.Data.MySqlClient;
+using BogseyVideoStore.Helpers;
+
 
 namespace BogseyVideoStore
 {
     public partial class VideoForm : Form
     {
+        private VideoService videoService = new VideoService();
+
         string connectionString = "server=localhost;database=bvs_db;uid=root;pwd=;";
         public VideoForm()
         {
@@ -34,169 +38,96 @@ namespace BogseyVideoStore
 
         private void btnAdd_Click(object sender, EventArgs e)
         {
-            using (MySqlConnection connection = new MySqlConnection(connectionString))
+            string title = txtVideoTitle.Text.Trim();
+            string category = cmbCategory.Text.Trim();
+            int rentalDaysAllowed;
+            int quantityIn, quantityOut;
+
+            if (!int.TryParse(txtQuantityIn.Text.Trim(), out quantityIn))
             {
-                try
-                {
-                    connection.Open();
+                MessageBox.Show("Please enter a valid number for Quantity In.");
+                return;
+            }
+            if (!int.TryParse(txtQuantityOut.Text.Trim(), out quantityOut))
+            {
+                MessageBox.Show("Please enter a valid number for Quantity Out.");
+                return;
+            }
+            if (!int.TryParse(cmbRentalDaysAllowed.Text.Trim(), out rentalDaysAllowed))
+            {
+                MessageBox.Show("Please enter a valid number for rental days allowed.");
+                return;
+            }
 
-                    // Check for duplicate title and category
-                    string checkQuery = "SELECT COUNT(*) FROM videos WHERE title = @title AND category = @category";
-                    MySqlCommand checkCmd = new MySqlCommand(checkQuery, connection);
-                    checkCmd.Parameters.AddWithValue("@title", txtVideoTitle.Text);
-                    checkCmd.Parameters.AddWithValue("@category", cmbCategory.SelectedItem?.ToString() ?? "");
-
-                    int count = Convert.ToInt32(checkCmd.ExecuteScalar());
-                    if (count > 0)
-                    {
-                        MessageBox.Show("A video with the same title and category already exists.");
-                        return;
-                    }
-
-                    // Insert if not duplicate
-                    string query = "INSERT INTO videos (title, category, quantity_in, quantity_out, rental_days_allowed) VALUES (@title, @category, @quantity_in, @quantity_out, @rental_days_allowed)";
-                    MySqlCommand cmd = new MySqlCommand(query, connection);
-                    cmd.Parameters.AddWithValue("@title", txtVideoTitle.Text);
-                    cmd.Parameters.AddWithValue("@category", cmbCategory.SelectedItem?.ToString() ?? "");
-                    cmd.Parameters.AddWithValue("@quantity_in", txtQuantityIn.Text);
-                    cmd.Parameters.AddWithValue("@quantity_out", txtQuantityOut.Text);
-                    cmd.Parameters.AddWithValue("@rental_days_allowed", cmbRentalDaysAllowed.SelectedItem.ToString());
-
-                    cmd.ExecuteNonQuery();
-                    MessageBox.Show("Video added successfully!");
-
-                    LoadVideos();
-                }
-                catch (Exception ex)
-                {
-                    MessageBox.Show("Error: " + ex.Message);
-                }
+            if (videoService.AddVideo(title, category, quantityIn, quantityOut, rentalDaysAllowed))
+            {
+                MessageBox.Show("Video added successfully.");
+                LoadVideos();
+                ClearForm();
             }
         }
 
         private void btnEdit_Click(object sender, EventArgs e)
         {
-            MySqlConnection connection = new MySqlConnection(connectionString);
-            try
+            if (dgvVideos.SelectedRows.Count > 0)
             {
-                if (dgvVideos.SelectedRows.Count > 0)
+                int videoId = Convert.ToInt32(dgvVideos.SelectedRows[0].Cells["video_id"].Value);
+                string title = txtVideoTitle.Text.Trim();
+                string category = cmbCategory.Text.Trim();
+                int rentalDaysAllowed, quantityIn, quantityOut;
+
+                if (!int.TryParse(txtQuantityIn.Text.Trim(), out quantityIn))
                 {
-                    int videoId = Convert.ToInt32(dgvVideos.SelectedRows[0].Cells[0].Value);
-                    string query = "UPDATE videos SET title = @title, category = @category, quantity_in = @quantity_in, quantity_out = @quantity_out, rental_days_allowed = @rental_days_allowed WHERE video_id = @id";
-                    MySqlCommand cmd = new MySqlCommand(query, connection);
-                    cmd.Parameters.AddWithValue("@title", txtVideoTitle.Text);
-                    cmd.Parameters.AddWithValue("@category", cmbCategory.SelectedItem.ToString());
-                    cmd.Parameters.AddWithValue("@quantity_in", txtQuantityIn.Text);
-                    cmd.Parameters.AddWithValue("@quantity_out", txtQuantityOut.Text);
-                    cmd.Parameters.AddWithValue("@rental_days_allowed", cmbRentalDaysAllowed.SelectedItem.ToString());
-                    cmd.Parameters.AddWithValue("@id", videoId);
+                    MessageBox.Show("Please enter a valid number for Quantity In.");
+                    return;
+                }
+                if (!int.TryParse(txtQuantityOut.Text.Trim(), out quantityOut))
+                {
+                    MessageBox.Show("Please enter a valid number for Quantity Out.");
+                    return;
+                }
+                if (!int.TryParse(cmbRentalDaysAllowed.Text.Trim(), out rentalDaysAllowed))
+                {
+                    MessageBox.Show("Please enter a valid number for rental days allowed.");
+                    return;
+                }
 
-                    connection.Open();
-                    cmd.ExecuteNonQuery();
-                    MessageBox.Show("Video updated successfully!");
-
+                if (videoService.UpdateVideo(videoId, title, category, quantityIn, quantityOut, rentalDaysAllowed))
+                {
+                    MessageBox.Show("Video updated successfully.");
                     LoadVideos();
-                }
-                else
-                {
-                    MessageBox.Show("Please select a video to edit.");
+                    ClearForm();
                 }
             }
-            catch (Exception ex)
+            else
             {
-                MessageBox.Show("Error: " + ex.Message);
-            }
-            finally
-            {
-                connection.Close();
+                MessageBox.Show("Please select a video to update.");
             }
         }
 
         private void btnDelete_Click(object sender, EventArgs e)
         {
-            using (MySqlConnection connection = new MySqlConnection(connectionString))
+            if (dgvVideos.SelectedRows.Count > 0)
             {
-                try
+                int videoId = Convert.ToInt32(dgvVideos.SelectedRows[0].Cells["video_id"].Value);
+                DialogResult result = MessageBox.Show("Are you sure you want to delete this video?", "Confirm Delete", MessageBoxButtons.YesNo);
+                if (result == DialogResult.Yes)
                 {
-                    if (dgvVideos.SelectedRows.Count > 0)
-                    {
-                        int videoId = Convert.ToInt32(dgvVideos.SelectedRows[0].Cells[0].Value);
-
-                        // Check if the video has rental records
-                        string checkQuery = "SELECT COUNT(*) FROM rentals WHERE video_id = @id";
-                        MySqlCommand checkCmd = new MySqlCommand(checkQuery, connection);
-                        checkCmd.Parameters.AddWithValue("@id", videoId);
-
-                        connection.Open();
-                        int rentalCount = Convert.ToInt32(checkCmd.ExecuteScalar());
-
-                        if (rentalCount > 0)
-                        {
-                            MessageBox.Show(
-                                "Cannot delete this video because there is rental information associated with it.\n" +
-                                "Please delete all rental records for this video before deleting the video.",
-                                "Delete Not Allowed",
-                                MessageBoxButtons.OK,
-                                MessageBoxIcon.Warning
-                            );
-                            return;
-                        }
-
-                        // Proceed with deletion if no rentals exist
-                        string query = "DELETE FROM videos WHERE video_id = @id";
-                        MySqlCommand cmd = new MySqlCommand(query, connection);
-                        cmd.Parameters.AddWithValue("@id", videoId);
-                        cmd.ExecuteNonQuery();
-                        MessageBox.Show("Video deleted successfully!");
-
-                        LoadVideos();
-                    }
-                    else
-                    {
-                        MessageBox.Show("Please select a video to delete.");
-                    }
+                    videoService.DeleteVideo(videoId);
+                    LoadVideos();
+                    ClearForm();
                 }
-                catch (Exception ex)
-                {
-                    MessageBox.Show("Error: " + ex.Message);
-                }
-                finally
-                {
-                    connection.Close();
-                }
+            }
+            else
+            {
+                MessageBox.Show("Please select a video to delete.");
             }
         }
 
 
         private void LoadVideos()
         {
-            dgvVideos.AutoSizeColumnsMode = DataGridViewAutoSizeColumnsMode.Fill;
-
-            MySqlConnection connection = new MySqlConnection(connectionString);
-
-            try
-            {
-                connection.Open();
-                string query = "SELECT video_id, title, category, quantity_in, quantity_out, rental_days_allowed FROM videos";
-                MySqlDataAdapter adapter = new MySqlDataAdapter(query, connection);
-                DataTable dt = new DataTable();
-                adapter.Fill(dt);
-
-                dgvVideos.DataSource = dt;
-
-                if (dgvVideos.Columns.Contains("video_id"))
-                {
-                    dgvVideos.Columns["video_id"].Visible = false;
-                }
-            }
-            catch (Exception ex)
-            {
-                MessageBox.Show("Error: " + ex.Message);
-            }
-            finally
-            {
-                connection.Close();
-            }
+            dgvVideos.DataSource = videoService.GetAllVideos();
         }
 
         private void label6_Click(object sender, EventArgs e)
@@ -206,11 +137,7 @@ namespace BogseyVideoStore
 
         private void btnClear_Click(object sender, EventArgs e)
         {
-            txtVideoTitle.Clear();
-            cmbCategory.SelectedIndex = -1;
-            txtQuantityIn.Clear();
-            txtQuantityOut.Clear();
-            cmbRentalDaysAllowed.SelectedIndex = 0;
+            ClearForm();
         }
 
         private void txtRentalDaysAllowed_TextChanged(object sender, EventArgs e)
@@ -298,6 +225,15 @@ namespace BogseyVideoStore
             mainForm.FormClosed += (s, args) => this.Show();
             mainForm.Show();
             this.Hide();
+        }
+
+        private void ClearForm()
+        {
+            txtVideoTitle.Clear();
+            cmbCategory.SelectedIndex = -1;
+            txtQuantityIn.Clear();
+            txtQuantityOut.Clear();
+            cmbRentalDaysAllowed.SelectedIndex = 0;
         }
 
     }
