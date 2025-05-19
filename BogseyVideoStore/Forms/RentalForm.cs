@@ -95,10 +95,13 @@ namespace BogseyVideoStore
                 dgvRentals.Columns["video_id"].Visible = false;
             }
         }
-
         private void LoadRentalsForCustomer(int customerId)
         {
-            dgvRentals.DataSource = RentalService.GetRentalsByCustomer(connectionString, customerId);
+            dgvRentals.AutoGenerateColumns = true;
+            dgvRentals.DataSource = null;
+
+            var rentals = RentalService.GetRentalsByCustomer(connectionString, customerId);
+            dgvRentals.DataSource = rentals;
 
             if (dgvRentals.Columns.Contains("rental_id"))
             {
@@ -109,7 +112,6 @@ namespace BogseyVideoStore
                 dgvRentals.Columns["video_id"].Visible = false;
             }
         }
-
 
         private void LoadVideos()
         {
@@ -489,20 +491,26 @@ namespace BogseyVideoStore
             string customer = dgvRentals.SelectedRows[0].Cells["customer"].Value.ToString();
 
             var rentalDetails = dgvRentals.SelectedRows
-            .Cast<DataGridViewRow>()
-            .Select(row =>
-            {
-                string video = row.Cells["video"].Value.ToString();
-                string rentDate = DateTime.Parse(row.Cells["rent_date"].Value.ToString()).ToString("dd/MM/yyyy");
-                string dueDate = DateTime.Parse(row.Cells["due_date"].Value.ToString()).ToString("dd/MM/yyyy");
-                string totalPrice = row.Cells["total_price"].Value.ToString();
-                string overduePrice = row.Cells["overdue_price"].Value.ToString();
-                return $"Video: {video}\nRent Date: {rentDate}\nDue Date: {dueDate}\nTotal Price: {totalPrice}\nOverdue Charge: {overduePrice}";
-            })
-            .ToArray();
+                .Cast<DataGridViewRow>()
+                .Select(row =>
+                {
+                    string video = row.Cells["video"].Value.ToString();
+                    string rentDate = DateTime.Parse(row.Cells["rent_date"].Value.ToString()).ToString("dd/MM/yyyy");
+                    string dueDate = DateTime.Parse(row.Cells["due_date"].Value.ToString()).ToString("dd/MM/yyyy");
+                    string totalPrice = row.Cells["total_price"].Value.ToString();
+                    string overduePrice = "0";
+
+                    if (dgvRentals.Columns.Contains("overdue_price"))
+                    {
+                        var val = row.Cells["overdue_price"].Value;
+                        overduePrice = val != null ? val.ToString() : "0";
+                    }
+
+                    return $"Video: {video}\nRent Date: {rentDate}\nDue Date: {dueDate}\nTotal Price: {totalPrice}\nOverdue Charge: {overduePrice}";
+                })
+                .ToArray();
 
             receiptText = string.Join("\n\n-----------------------------\n\n", rentalDetails);
-
 
             _printCustomerName = customer;
 
