@@ -519,6 +519,9 @@ namespace BogseyVideoStore
 
             PrintPreviewDialog previewDialog = new PrintPreviewDialog();
             previewDialog.Document = printDocument;
+
+            ((Form)previewDialog).WindowState = FormWindowState.Maximized;
+
             previewDialog.ShowDialog();
         }
 

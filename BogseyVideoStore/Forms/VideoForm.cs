@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Data;
-using System.Data.SqlClient;
 using System.Drawing;
 using System.Linq;
 using System.Text;
@@ -128,6 +127,11 @@ namespace BogseyVideoStore
         private void LoadVideos()
         {
             dgvVideos.DataSource = videoService.GetAllVideos();
+
+            if (dgvVideos.Columns.Contains("video_id"))
+            {
+                dgvVideos.Columns["video_id"].Visible = false;
+            }
         }
 
         private void label6_Click(object sender, EventArgs e)

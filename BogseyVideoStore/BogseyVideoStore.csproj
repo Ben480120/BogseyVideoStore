@@ -188,6 +188,7 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="Resources\BVS Logo.jpg" />
+    <Content Include="Database\bvs_db.sql" />
     <Content Include="Resources\bvsogo.jpg" />
     <None Include="Resources\logo.bmp" />
   </ItemGroup>

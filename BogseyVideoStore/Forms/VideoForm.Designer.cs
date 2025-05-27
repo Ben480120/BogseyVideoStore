@@ -123,7 +123,8 @@
             // 
             // dgvVideos
             // 
-            this.dgvVideos.BackgroundColor = System.Drawing.Color.SeaShell;
+            this.dgvVideos.BackgroundColor = System.Drawing.Color.Snow;
+            this.dgvVideos.BorderStyle = System.Windows.Forms.BorderStyle.None;
             this.dgvVideos.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
             this.dgvVideos.Location = new System.Drawing.Point(170, 412);
             this.dgvVideos.Name = "dgvVideos";
